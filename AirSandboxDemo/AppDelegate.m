@@ -21,6 +21,9 @@
     // Override point for customization after application launch.
     
     
+    NSURL* testUrl = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    NSString* path = [testUrl.path stringByAppendingPathComponent:@"test.txt"];
+    [@"123" writeToFile:path atomically:true encoding:NSUTF8StringEncoding error:nil];
     
 #ifdef DEBUG
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

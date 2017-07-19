@@ -70,6 +70,7 @@ typedef enum : NSUInteger {
 #pragma mark- ASViewController
 @interface ASViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView*                 tableView;
+@property (nonatomic, strong) UIButton*                    btnClose;
 @property (nonatomic, strong) NSArray*                     items;
 @property (nonatomic, copy) NSString*                      rootPath;
 @end
@@ -86,17 +87,13 @@ typedef enum : NSUInteger {
 - (void)prepareCtrl
 {
     self.view.backgroundColor = [UIColor whiteColor];
-    int viewWidth = [UIScreen mainScreen].bounds.size.width - 2*ASWindowPadding;
-    
-    int closeWidth = 60;
-    int closeHeight = 28;
-    UIButton* btnClose = [UIButton new];
-    [self.view addSubview:btnClose];
-    btnClose.frame = CGRectMake(viewWidth-closeWidth-4, 4, closeWidth, closeHeight);
-    btnClose.backgroundColor = ASThemeColor;
-    [btnClose setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [btnClose setTitle:@"Close" forState:UIControlStateNormal];
-    [btnClose addTarget:self action:@selector(btnCloseClick) forControlEvents:UIControlEventTouchUpInside];
+
+    _btnClose = [UIButton new];
+    [self.view addSubview:_btnClose];
+    _btnClose.backgroundColor = ASThemeColor;
+    [_btnClose setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [_btnClose setTitle:@"Close" forState:UIControlStateNormal];
+    [_btnClose addTarget:self action:@selector(btnCloseClick) forControlEvents:UIControlEventTouchUpInside];
     
     _tableView = [UITableView new];
     [self.view addSubview:_tableView];
@@ -104,15 +101,25 @@ typedef enum : NSUInteger {
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.delegate = self;
     _tableView.dataSource = self;
+
+    _items = @[];
+    _rootPath = NSHomeDirectory();
+}
+
+- (void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
+    
+    int viewWidth = [UIScreen mainScreen].bounds.size.width - 2*ASWindowPadding;
+    int closeWidth = 60;
+    int closeHeight = 28;
+    
+    _btnClose.frame = CGRectMake(viewWidth-closeWidth-4, 4, closeWidth, closeHeight);
     
     CGRect tableFrame = self.view.frame;
     tableFrame.origin.y += (closeHeight+4);
     tableFrame.size.height -= (closeHeight+4);
     _tableView.frame = tableFrame;
-    
-    _items = @[];
-    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    _rootPath = [[paths objectAtIndex:0] stringByDeletingLastPathComponent];
 }
 
 - (void)btnCloseClick
@@ -225,8 +232,6 @@ typedef enum : NSUInteger {
     NSArray *objectsToShare = @[url];
     
     UIActivityViewController *controller = [[UIActivityViewController alloc] initWithActivityItems:objectsToShare applicationActivities:nil];
-    
-    // Exclude all activities except AirDrop.
     NSArray *excludedActivities = @[UIActivityTypePostToTwitter, UIActivityTypePostToFacebook,
                                     UIActivityTypePostToWeibo,
                                     UIActivityTypeMessage, UIActivityTypeMail,
