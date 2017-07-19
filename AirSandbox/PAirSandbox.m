@@ -111,8 +111,7 @@ typedef enum : NSUInteger {
     _tableView.frame = tableFrame;
     
     _items = @[];
-    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    _rootPath = [[paths objectAtIndex:0] stringByDeletingLastPathComponent];
+    _rootPath = NSHomeDirectory();
 }
 
 - (void)btnCloseClick
