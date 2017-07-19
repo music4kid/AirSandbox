@@ -10,7 +10,7 @@ After your key window is created, add below code:
 ```
 now swipe from the right edge of the screen, a simple file browser shall pop up.
 
-<img src="http://mrpeak.cn/images/airsandbox.jpg" width="750">
+<img src="http://mrpeak.cn/images/airsandbox.jpg" width="375">
 
 no more instructions needed.
 
