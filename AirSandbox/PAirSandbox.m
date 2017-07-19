@@ -240,6 +240,11 @@ typedef enum : NSUInteger {
                                     UIActivityTypeAddToReadingList, UIActivityTypePostToFlickr,
                                     UIActivityTypePostToVimeo, UIActivityTypePostToTencentWeibo];
     controller.excludedActivityTypes = excludedActivities;
+    
+    if ([(NSString *)[UIDevice currentDevice].model hasPrefix:@"iPad"]) {
+        controller.popoverPresentationController.sourceView = self.view;
+        controller.popoverPresentationController.sourceRect = CGRectMake([UIScreen mainScreen].bounds.size.width * 0.5, [UIScreen mainScreen].bounds.size.height, 10, 10);
+    }
     [self presentViewController:controller animated:YES completion:nil];
 }
 
