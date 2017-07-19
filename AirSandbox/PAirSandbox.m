@@ -70,7 +70,6 @@ typedef enum : NSUInteger {
 #pragma mark- ASViewController
 @interface ASViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView*                 tableView;
-@property (nonatomic,strong)  UIButton*                    btnClose;
 @property (nonatomic, strong) NSArray*                     items;
 @property (nonatomic, copy) NSString*                      rootPath;
 @end
@@ -84,30 +83,20 @@ typedef enum : NSUInteger {
     [self loadPath:nil];
 }
 
--(void)viewWillLayoutSubviews
-{
-    [super viewWillLayoutSubviews];
-    
-    int closeWidth = 60;
-    int closeHeight = 28;
-    _btnClose.frame = CGRectMake(self.view.frame.size.width-closeWidth-4, 4, closeWidth, closeHeight);
-    
-    CGRect tableFrame = self.view.frame;
-    tableFrame.origin.y += (closeHeight+4);
-    tableFrame.size.height -= (closeHeight+4) + 2.0;
-    _tableView.frame = tableFrame;
-}
-
 - (void)prepareCtrl
 {
     self.view.backgroundColor = [UIColor whiteColor];
+    int viewWidth = [UIScreen mainScreen].bounds.size.width - 2*ASWindowPadding;
     
-    _btnClose = [UIButton new];
-    [self.view addSubview:_btnClose];
-    _btnClose.backgroundColor = ASThemeColor;
-    [_btnClose setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    [_btnClose setTitle:@"Close" forState:UIControlStateNormal];
-    [_btnClose addTarget:self action:@selector(btnCloseClick) forControlEvents:UIControlEventTouchUpInside];
+    int closeWidth = 60;
+    int closeHeight = 28;
+    UIButton* btnClose = [UIButton new];
+    [self.view addSubview:btnClose];
+    btnClose.frame = CGRectMake(viewWidth-closeWidth-4, 4, closeWidth, closeHeight);
+    btnClose.backgroundColor = ASThemeColor;
+    [btnClose setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [btnClose setTitle:@"Close" forState:UIControlStateNormal];
+    [btnClose addTarget:self action:@selector(btnCloseClick) forControlEvents:UIControlEventTouchUpInside];
     
     _tableView = [UITableView new];
     [self.view addSubview:_tableView];
@@ -116,8 +105,14 @@ typedef enum : NSUInteger {
     _tableView.delegate = self;
     _tableView.dataSource = self;
     
+    CGRect tableFrame = self.view.frame;
+    tableFrame.origin.y += (closeHeight+4);
+    tableFrame.size.height -= (closeHeight+4);
+    _tableView.frame = tableFrame;
+    
     _items = @[];
-    _rootPath = NSHomeDirectory();
+    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    _rootPath = [[paths objectAtIndex:0] stringByDeletingLastPathComponent];
 }
 
 - (void)btnCloseClick
@@ -273,11 +268,13 @@ typedef enum : NSUInteger {
 
 - (void)enableSwipe
 {
-    UIPinchGestureRecognizer *swipeGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(onPinchDetected:)];
+    UISwipeGestureRecognizer* swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(onSwipeDetected:)];
+    swipeGesture.numberOfTouchesRequired = 1;
+    swipeGesture.direction = (UISwipeGestureRecognizerDirectionLeft);
     [[UIApplication sharedApplication].keyWindow addGestureRecognizer:swipeGesture];
 }
 
-- (void)onPinchDetected:(UISwipeGestureRecognizer*)gs
+- (void)onSwipeDetected:(UISwipeGestureRecognizer*)gs
 {
     [self showSandboxBrowser];
 }
@@ -295,7 +292,6 @@ typedef enum : NSUInteger {
         _window.windowLevel = UIWindowLevelStatusBar;
         
         _ctrl = [ASViewController new];
-        _ctrl.view.frame = CGRectMake(0, 0, _window.frame.size.width, _window.frame.size.height);
         _window.rootViewController = _ctrl;
     }
     _window.hidden = false;
