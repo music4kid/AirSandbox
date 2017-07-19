@@ -61,3 +61,7 @@ fastlane/test_output
 # https://github.com/johnno1962/injectionforxcode
 
 iOSInjectionProject/
+
+AirSandboxDemo.xcodeproj/project.pbxproj
+
+AirSandboxDemo.xcodeproj/project.pbxproj
